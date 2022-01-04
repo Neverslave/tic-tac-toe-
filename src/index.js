@@ -45,6 +45,7 @@ class Board extends React.Component {
   }
 }
 
+// 增加记录位置
 class Game extends React.Component {
   constructor (props) {
     super(props)
@@ -53,12 +54,13 @@ class Game extends React.Component {
         squares: Array(9).fill(null)
       }],
       xIsNext: true,
-      stepNumber: 0
+      stepNumber: 0,
+      positon: -1
     }
   }
 
   handleClick (i) {
-    const history = this.state.history.slice(0,this.state.stepNumber + 1)
+    const history = this.state.history.slice(0, this.state.stepNumber + 1)
     const current = history[history.length - 1]
     const squares = current.squares.slice()
     if (calculateWinner(squares) || squares[i]) {
@@ -70,7 +72,8 @@ class Game extends React.Component {
         squares: squares
       }]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
+      positon: i
     })
   }
 
@@ -81,14 +84,26 @@ class Game extends React.Component {
     })
   }
 
+  setPostion (positon) {
+    if (positon === -1) {
+      return ' '
+    } else {
+      const row = parseInt(positon / 3) + 1
+      const col = positon % 3 + 1
+      return ` 第 ${row}行，第${col}列`
+    }
+  }
+
   render () {
     const history = this.state.history
     const current = history[this.state.stepNumber]
     const winner = calculateWinner(current.squares)
-    let status
+    const position = this.state.positon
+    const descp = this.setPostion(position)
     const moves = history.map((step, move) => {
+      console.log(move)
       const desc = move
-        ? 'Go to move #' + move
+        ? 'Go to move #' + move + descp
         : 'Go to game start'
       return (
         <li key={move}>
@@ -117,6 +132,8 @@ class Game extends React.Component {
     )
   }
 }
+
+// 判断胜负
 function calculateWinner (squares) {
   const lines = [
     [0, 1, 2],
